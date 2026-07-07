@@ -1,0 +1,33 @@
+definitions:
+  dto.TodoResponse:
+    properties:
+      data:
+        type: string
+      message:
+        type: string
+      status_code:
+        default: 200
+        type: integer
+      success:
+        default: true
+        type: boolean
+    type: object
+info:
+  contact: {}
+paths:
+  /todos:
+    get:
+      consumes:
+      - application/json
+      description: Get all todos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TodoResponse'
+      summary: Get all todos
+      tags:
+      - todos
+swagger: "2.0"

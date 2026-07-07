@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"syncova-todo/domain"
+	"syncova-todo/delivery/dto"
 	usecase "syncova-todo/usecase/todos"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +17,14 @@ func NewTodosHandler(usecase usecase.TodosUsecase) *TodosHandler {
 	}
 }
 
-// GET /todos
+// GetTodos godoc
+// @Summary Get all todos
+// @Description Get all todos
+// @Tags todos
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.TodoResponse
+// @Router /todos [get]
 func (h *TodosHandler) GetTodos(ctx *gin.Context) {
 	todos, err := h.Usecase.GetTodos(ctx)
 	if err != nil {
@@ -27,7 +34,7 @@ func (h *TodosHandler) GetTodos(ctx *gin.Context) {
 		return
 	}
 
-	response := domain.NewSuccessResponse(todos, "Get todos successfully")
+	response := dto.NewTodoSuccessResponse(todos, "Get todos successfully")
 
 	ctx.JSON(200, response)
 }

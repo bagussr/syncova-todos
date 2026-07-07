@@ -6,20 +6,34 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syncova-todo/cmd/docs"
 	"syncova-todo/config"
-	delivery "syncova-todo/delivery/http/v1"
 	"syncova-todo/middleware"
 	"syscall"
 	"time"
+
+	delivery "syncova-todo/delivery/http/v1"
+
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	cfg := config.LoadConfig()
+	docs.SwaggerInfo.Title = "Syncova Todo API"
+	docs.SwaggerInfo.Description = "This is a sample server for Syncova Todo API."
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Host = cfg.Host + ":" + cfg.Port
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	app := gin.Default()
 	app.Use(middleware.ErrorMiddleware())
+	app.GET("/swagger/*any", ginSwagger.WrapHandler(
+		swaggerfiles.Handler,
+	))
 	api := app.Group("/api")
 	delivery.SetupRouter(api)
 

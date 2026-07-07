@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	Port string
+	Host string
 }
 
 func LoadConfig() *Config {
@@ -15,6 +16,7 @@ func LoadConfig() *Config {
 
 	return &Config{
 		Port: getEnv("PORT", "8080"),
+		Host: getEnv("HOST", "localhost"),
 	}
 }
 

@@ -13,7 +13,11 @@ func ErrorMiddleware() gin.HandlerFunc {
 		if len(ctx.Errors) > 0 {
 			err := ctx.Errors.Last().Err
 			statusCode, message := domain.ErrorHandler(err)
-			ctx.JSON(statusCode, domain.NewErrorResponse(statusCode, message))
+			ctx.JSON(statusCode, domain.BaseResponse{
+				Success:    false,
+				StatusCode: statusCode,
+				Message:    message,
+			})
 		}
 	}
 }
