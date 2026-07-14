@@ -14,3 +14,11 @@ type BaseListResponse struct {
 	PerPage    int    `json:"per_page"`
 	Total      int    `json:"total"`
 }
+
+func NewBaseResponse(success bool, statusCode int, message string) BaseResponse {
+	return BaseResponse{
+		Success:    success,
+		StatusCode: statusCode,
+		Message:    message,
+	}
+}

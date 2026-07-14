@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"syncova-todo/domain"
+	domain "syncova-todo/domain/base"
 
 	"github.com/gin-gonic/gin"
 )

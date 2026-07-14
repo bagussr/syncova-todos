@@ -5,6 +5,7 @@ import "errors"
 var (
 	ErrNotFound     = errors.New("data not found")
 	ErrConflict     = errors.New("data already exists")
+	ErrInternal     = errors.New("internal server error")
 	ErrUnauthorized = errors.New("unauthorized")
 	ErrBadRequest   = errors.New("bad request")
 )
@@ -20,6 +21,6 @@ func ErrorHandler(err error) (int, string) {
 	case errors.Is(err, ErrBadRequest):
 		return 400, err.Error()
 	default:
-		return 500, "internal server error"
+		return 500, ErrInternal.Error()
 	}
 }
