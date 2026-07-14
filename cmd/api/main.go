@@ -8,6 +8,8 @@ import (
 	"os/signal"
 	"syncova-todo/cmd/docs"
 	"syncova-todo/config"
+	clients "syncova-todo/infrastructure/clients/auth"
+	"syncova-todo/infrastructure/database"
 	"syncova-todo/middleware"
 	"syscall"
 	"time"
@@ -20,8 +22,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and your JWT token.
+
 func main() {
 	cfg := config.LoadConfig()
+
+	// configuration swagger
 	docs.SwaggerInfo.Title = "Syncova Todo API"
 	docs.SwaggerInfo.Description = "This is a sample server for Syncova Todo API."
 	docs.SwaggerInfo.Version = "1.0"
@@ -29,13 +38,41 @@ func main() {
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
+	// initialize the database connection
+	database, err := database.NewPostgresConnection(cfg)
+
+	if err != nil {
+		log.Fatalf("Failed to connect to the database: %v", err)
+	}
+
+	defer func() {
+		sqlDB, err := database.DB.DB()
+		if err != nil {
+			log.Printf("Failed to get sqlDB: %v", err)
+			return
+		}
+		if err := sqlDB.Close(); err != nil {
+			log.Printf("Failed to close database connection: %v", err)
+		}
+	}()
+
+	// calling the auth middleware
+	authClient := clients.NewAuthClientWithAPIKey(
+		cfg.AuthServiceURL,
+		5*time.Second,
+		cfg.AuthServiceAPIKey,
+	)
+
 	app := gin.Default()
 	app.Use(middleware.ErrorMiddleware())
 	app.GET("/swagger/*any", ginSwagger.WrapHandler(
 		swaggerfiles.Handler,
 	))
+
 	api := app.Group("/api")
-	delivery.SetupRouter(api)
+
+	api.Use(middleware.RequireAuth(authClient))
+	delivery.SetupRouter(api, database)
 
 	srv := &http.Server{
 		Addr:    ":" + cfg.Port,
