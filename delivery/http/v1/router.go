@@ -1,8 +1,12 @@
 package http
 
-import "github.com/gin-gonic/gin"
+import (
+	"syncova-todo/infrastructure/database"
 
-func SetupRouter(r *gin.RouterGroup) *gin.RouterGroup {
+	"github.com/gin-gonic/gin"
+)
+
+func SetupRouter(r *gin.RouterGroup, db *database.PostgresDB) *gin.RouterGroup {
 
 	r.GET("/health", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{
@@ -13,7 +17,8 @@ func SetupRouter(r *gin.RouterGroup) *gin.RouterGroup {
 	var v1 = r.Group("/v1")
 
 	// Setup router
-	SetupTodosRouter(v1)
+	SetupTodosRouter(v1, db)
+	SetupProjectsRouter(v1, db)
 
 	return r
 }

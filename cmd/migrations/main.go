@@ -40,7 +40,7 @@ func main() {
 func runUp() {
 	cfg := config.LoadConfig()
 
-	postgres, err := database.NewPostgresConnection(cfg)
+	postgres, err := database.NewPostgresConnection(cfg, false)
 	if err != nil {
 		log.Fatalf("failed to connect to database: %v", err)
 	}
@@ -65,7 +65,7 @@ func runUp() {
 func runDown(args []string) {
 	cfg := config.LoadConfig()
 
-	postgres, err := database.NewPostgresConnection(cfg)
+	postgres, err := database.NewPostgresConnection(cfg, false)
 	if err != nil {
 		log.Fatalf("failed to connect to database: %v", err)
 	}
@@ -149,7 +149,7 @@ func detectBeforeMigrationID() string {
 
 func latestAppliedMigrationFromDB() string {
 	cfg := config.LoadConfig()
-	postgres, err := database.NewPostgresConnection(cfg)
+	postgres, err := database.NewPostgresConnection(cfg, false)
 	if err != nil {
 		return ""
 	}

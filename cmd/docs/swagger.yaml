@@ -1,4 +1,90 @@
 definitions:
+  domain.BaseResponse:
+    properties:
+      message:
+        type: string
+      status_code:
+        default: 200
+        type: integer
+      success:
+        default: true
+        type: boolean
+    required:
+    - message
+    - status_code
+    - success
+    type: object
+  dto.CreateProjectRequest:
+    properties:
+      description:
+        type: string
+      due_date:
+        type: string
+      name:
+        type: string
+    required:
+    - due_date
+    - name
+    type: object
+  dto.ProjectDto:
+    properties:
+      description:
+        type: string
+      due_date:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+      uuid:
+        type: string
+    type: object
+  dto.ProjectResponse:
+    properties:
+      data:
+        $ref: '#/definitions/dto.ProjectDto'
+      message:
+        type: string
+      status_code:
+        default: 200
+        type: integer
+      success:
+        default: true
+        type: boolean
+    required:
+    - message
+    - status_code
+    - success
+    type: object
+  dto.ProjectsListResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      page:
+        default: 1
+        type: integer
+      per_page:
+        default: 10
+        type: integer
+      status_code:
+        default: 200
+        type: integer
+      success:
+        default: true
+        type: boolean
+      total:
+        default: 0
+        type: integer
+    required:
+    - data
+    - message
+    - page
+    - per_page
+    - status_code
+    - success
+    - total
+    type: object
   dto.TodoResponse:
     properties:
       data:
@@ -11,10 +97,161 @@ definitions:
       success:
         default: true
         type: boolean
+    required:
+    - message
+    - status_code
+    - success
+    type: object
+  dto.UpdateProjectRequest:
+    properties:
+      description:
+        type: string
+      due_date:
+        type: string
+      name:
+        type: string
     type: object
 info:
   contact: {}
 paths:
+  /projects:
+    get:
+      consumes:
+      - application/json
+      description: Get all projects
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Number of items per page
+        in: query
+        name: per_page
+        type: integer
+      - default: created_at
+        description: Sort by field
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Sort by field
+        in: query
+        name: sort
+        type: string
+      - description: Search by name or description
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProjectsListResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all projects
+      tags:
+      - Projects
+    post:
+      consumes:
+      - application/json
+      description: Create a new project
+      parameters:
+      - description: Create Project Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateProjectRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ProjectResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new project
+      tags:
+      - Projects
+  /projects/{uuid}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a project
+      parameters:
+      - description: Project UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.BaseResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a project
+      tags:
+      - Projects
+    get:
+      consumes:
+      - application/json
+      description: Get project by UUID
+      parameters:
+      - description: Project UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProjectResponse'
+      security:
+      - BearerAuth: []
+      summary: Get project by UUID
+      tags:
+      - Projects
+    patch:
+      consumes:
+      - application/json
+      description: Update a project
+      parameters:
+      - description: Project UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Update Project Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateProjectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProjectResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a project
+      tags:
+      - Projects
   /todos:
     get:
       consumes:
@@ -27,7 +264,15 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.TodoResponse'
+      security:
+      - BearerAuth: []
       summary: Get all todos
       tags:
       - todos
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and your JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

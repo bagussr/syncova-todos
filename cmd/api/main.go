@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"syncova-todo/cmd/docs"
 	"syncova-todo/config"
+	domain "syncova-todo/domain/base"
 	clients "syncova-todo/infrastructure/clients/auth"
 	"syncova-todo/infrastructure/database"
 	"syncova-todo/middleware"
@@ -39,7 +40,7 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	// initialize the database connection
-	database, err := database.NewPostgresConnection(cfg)
+	database, err := database.NewPostgresConnection(cfg, true)
 
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
@@ -68,6 +69,14 @@ func main() {
 	app.GET("/swagger/*any", ginSwagger.WrapHandler(
 		swaggerfiles.Handler,
 	))
+
+	app.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, domain.BaseResponse{
+			Success:    true,
+			StatusCode: 200,
+			Message:    "Server is running",
+		})
+	})
 
 	api := app.Group("/api")
 
