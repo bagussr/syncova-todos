@@ -17,6 +17,7 @@ type Config struct {
 	ENV               string
 	AuthServiceURL    string
 	AuthServiceAPIKey string
+	JwtSecret         string
 }
 
 func LoadConfig() *Config {
@@ -33,6 +34,7 @@ func LoadConfig() *Config {
 		ENV:               getEnv("ENV", "development"),
 		AuthServiceURL:    getEnv("AUTH_SERVICE_URL", ""),
 		AuthServiceAPIKey: getEnv("AUTH_SERVICE_API_KEY", ""),
+		JwtSecret:         getEnv("JWT_SECRET", ""),
 	}
 }
 

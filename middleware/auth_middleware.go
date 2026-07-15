@@ -11,6 +11,7 @@ import (
 
 type AuthMiddlewareConfig struct {
 	AuthClient   clients.AuthServiceClient
+	AuthLocal    clients.AuthServiceLocal
 	ExcludePaths []string
 }
 
@@ -45,8 +46,8 @@ func NewAuthMiddleware(config AuthMiddlewareConfig) gin.HandlerFunc {
 
 		token := parts[1]
 
-		// Call auth microservice to validate token
-		claims, err := config.AuthClient.ValidateToken(c.Request.Context(), token)
+		// Call auth microservice to validate token with claims
+		claims, err := config.AuthLocal.ValidateTokenWithClaims(c.Request.Context(), token)
 		if err != nil {
 			// Handle specific errors
 			if err == domain.ErrUnauthorized {
@@ -71,8 +72,8 @@ func NewAuthMiddleware(config AuthMiddlewareConfig) gin.HandlerFunc {
 		}
 
 		// Store claims in Gin context for downstream handlers
-		// c.Set(string(clients.ContextKeyUserId), claims.UserId)
-		// c.Set(string(clients.ContextKeyEmail), claims.Email)
+		c.Set(string(clients.ContextKeyUserId), claims.Uuid)
+		c.Set(string(clients.ContextKeyEmail), claims.Email)
 		c.Set(string(clients.ContextKeyClaims), claims)
 
 		c.Next()
@@ -82,12 +83,12 @@ func NewAuthMiddleware(config AuthMiddlewareConfig) gin.HandlerFunc {
 // Helper functions to extract user data from context
 
 // GetUserID retrieves user ID from Gin context
-func GetUserID(c *gin.Context) (int64, bool) {
+func GetUserID(c *gin.Context) (string, bool) {
 	userID, exists := c.Get(string(clients.ContextKeyUserId))
 	if !exists {
-		return 0, false
+		return "", false
 	}
-	id, ok := userID.(int64)
+	id, ok := userID.(string)
 	return id, ok
 }
 
@@ -112,9 +113,10 @@ func GetTokenClaims(c *gin.Context) (bool, bool) {
 }
 
 // RequireAuth is a convenience wrapper that applies auth with default config
-func RequireAuth(authClient clients.AuthServiceClient) gin.HandlerFunc {
+func RequireAuth(authClient clients.AuthServiceClient, authLocal clients.AuthServiceLocal) gin.HandlerFunc {
 	return NewAuthMiddleware(AuthMiddlewareConfig{
 		AuthClient: authClient,
+		AuthLocal:  authLocal,
 	})
 }
 

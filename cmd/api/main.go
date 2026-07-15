@@ -64,6 +64,8 @@ func main() {
 		cfg.AuthServiceAPIKey,
 	)
 
+	authLocal := clients.NewAuthLocal(cfg.AuthServiceAPIKey, cfg.JwtSecret)
+
 	app := gin.Default()
 	app.Use(middleware.ErrorMiddleware())
 	app.GET("/swagger/*any", ginSwagger.WrapHandler(
@@ -80,7 +82,7 @@ func main() {
 
 	api := app.Group("/api")
 
-	api.Use(middleware.RequireAuth(authClient))
+	api.Use(middleware.RequireAuth(authClient, authLocal))
 	delivery.SetupRouter(api, database)
 
 	srv := &http.Server{
