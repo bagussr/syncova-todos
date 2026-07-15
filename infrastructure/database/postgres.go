@@ -89,7 +89,7 @@ func (p *PostgresDB) WithContext(ctx context.Context) *gorm.DB {
 	return p.DB.WithContext(ctx)
 }
 
-func (p *PostgresDB) Paginated(ctx context.Context, request *domain.BasePaginationRequest, models interface{}, searchColumns []string) (*domain.BaseListResponse, error) {
+func (p *PostgresDB) Paginated(ctx context.Context, request *domain.BasePaginationRequest, models interface{}, searchColumns []string, userID string) (*domain.BaseListResponse, error) {
 	page := request.Page
 	if page <= 0 {
 		page = 1
@@ -101,6 +101,10 @@ func (p *PostgresDB) Paginated(ctx context.Context, request *domain.BasePaginati
 	}
 
 	query := p.DB.WithContext(ctx).Model(models)
+	if userID != "" {
+		query = query.Where("user_id = ?", userID)
+	}
+
 	if request.Search != "" && len(searchColumns) > 0 {
 		search := "%" + strings.TrimSpace(request.Search) + "%"
 		conditions := make([]string, 0, len(searchColumns))

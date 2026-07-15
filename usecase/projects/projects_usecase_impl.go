@@ -21,11 +21,11 @@ func NewProjectsUsecase(repository repository.ProjectsRepository, timeout time.D
 	}
 }
 
-func (p *projectsUsecase) GetProjects(ctx context.Context, request *domain.BasePaginationRequest) (*domain.BaseListResponse, error) {
+func (p *projectsUsecase) GetProjects(ctx context.Context, request *domain.BasePaginationRequest, userID string) (*domain.BaseListResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, p.timeout)
 	defer cancel()
 
-	projects, err := p.repository.GetProjects(ctx, request)
+	projects, err := p.repository.GetProjects(ctx, request, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -45,11 +45,11 @@ func (p *projectsUsecase) GetProjectByUUID(ctx context.Context, uid string) (mod
 	return project, nil
 }
 
-func (p *projectsUsecase) CreateProject(ctx context.Context, request dto.CreateProjectRequest) (models.Project, error) {
+func (p *projectsUsecase) CreateProject(ctx context.Context, request dto.CreateProjectRequest, userID string) (models.Project, error) {
 	ctx, cancel := context.WithTimeout(ctx, p.timeout)
 	defer cancel()
 
-	result, err := p.repository.CreateProject(ctx, request)
+	result, err := p.repository.CreateProject(ctx, request, userID)
 	if err != nil {
 		return models.Project{}, err
 	}

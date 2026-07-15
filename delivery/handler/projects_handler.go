@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"syncova-todo/delivery/dto"
 	domain "syncova-todo/domain/base"
+	"syncova-todo/middleware"
 	usecase "syncova-todo/usecase/projects"
 
 	"github.com/gin-gonic/gin"
@@ -44,7 +45,10 @@ func (h *ProjectsHandler) GetProjects(ctx *gin.Context) {
 		Sort:    query.Get("sort"),
 		Search:  query.Get("search"),
 	}
-	projects, err := h.Usecase.GetProjects(ctx, request)
+
+	userID, _ := middleware.GetUserID(ctx)
+
+	projects, err := h.Usecase.GetProjects(ctx, request, userID)
 	if err != nil {
 		ctx.JSON(500, gin.H{
 			"error": err.Error(),
@@ -102,7 +106,9 @@ func (h *ProjectsHandler) CreateProject(ctx *gin.Context) {
 		return
 	}
 
-	project, err := h.Usecase.CreateProject(ctx, request)
+	userId, _ := middleware.GetUserID(ctx)
+
+	project, err := h.Usecase.CreateProject(ctx, request, userId)
 	if err != nil {
 		ctx.JSON(500, gin.H{
 			"error": err.Error(),

@@ -19,10 +19,10 @@ func NewProjectsRepository(db *database.PostgresDB) ProjectsRepository {
 	return &projectsRepository{db: db}
 }
 
-func (r *projectsRepository) GetProjects(ctx context.Context, request *domain.BasePaginationRequest) (*domain.BaseListResponse, error) {
+func (r *projectsRepository) GetProjects(ctx context.Context, request *domain.BasePaginationRequest, userID string) (*domain.BaseListResponse, error) {
 	var projects []models.Project
 
-	result, err := r.db.Paginated(ctx, request, &projects, []string{"name"})
+	result, err := r.db.Paginated(ctx, request, &projects, []string{"name"}, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -42,12 +42,14 @@ func (r *projectsRepository) GetProjectByUUID(ctx context.Context, uid string) (
 	return project, nil
 }
 
-func (r *projectsRepository) CreateProject(ctx context.Context, request dto.CreateProjectRequest) (models.Project, error) {
+func (r *projectsRepository) CreateProject(ctx context.Context, request dto.CreateProjectRequest, userID string) (models.Project, error) {
+
 	project := models.Project{
 		Name:        request.Name,
 		Description: request.Description,
 		Status:      enums.NotStarted,
 		DueDate:     request.DueDate,
+		UserId:      userID,
 	}
 
 	result := r.db.DB.WithContext(ctx).Create(&project)
