@@ -26,6 +26,28 @@ definitions:
     - due_date
     - name
     type: object
+  dto.CreateTodoRequest:
+    properties:
+      description:
+        type: string
+      due_date:
+        type: string
+      priority:
+        default: low
+        enum:
+        - low
+        - medium
+        - high
+        type: string
+      start_date:
+        type: string
+      title:
+        type: string
+    required:
+    - due_date
+    - start_date
+    - title
+    type: object
   dto.ProjectDto:
     properties:
       description:
@@ -88,7 +110,7 @@ definitions:
   dto.TodoResponse:
     properties:
       data:
-        type: string
+        $ref: '#/definitions/dto.TodosDto'
       message:
         type: string
       status_code:
@@ -102,6 +124,25 @@ definitions:
     - status_code
     - success
     type: object
+  dto.TodosDto:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      due_date:
+        type: string
+      priority:
+        type: string
+      start_date:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+      uuid:
+        type: string
+    type: object
   dto.UpdateProjectRequest:
     properties:
       description:
@@ -109,6 +150,19 @@ definitions:
       due_date:
         type: string
       name:
+        type: string
+    type: object
+  dto.UpdateTodoRequest:
+    properties:
+      description:
+        type: string
+      due_date:
+        type: string
+      priority:
+        type: string
+      start_date:
+        type: string
+      title:
         type: string
     type: object
 info:
@@ -257,6 +311,31 @@ paths:
       consumes:
       - application/json
       description: Get all todos
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Number of items per page
+        in: query
+        name: per_page
+        type: integer
+      - default: created_at
+        description: Sort by field
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Sort by field
+        in: query
+        name: sort
+        type: string
+      - description: Search by name or description
+        in: query
+        name: search
+        type: string
       produces:
       - application/json
       responses:
@@ -267,6 +346,102 @@ paths:
       security:
       - BearerAuth: []
       summary: Get all todos
+      tags:
+      - todos
+    post:
+      consumes:
+      - application/json
+      description: Create todo
+      parameters:
+      - description: Create todo request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.TodoResponse'
+      security:
+      - BearerAuth: []
+      summary: Create todo
+      tags:
+      - todos
+  /todos/{uuid}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete todo
+      parameters:
+      - description: Todo UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TodoResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete todo
+      tags:
+      - todos
+    get:
+      consumes:
+      - application/json
+      description: Get todo by uuid
+      parameters:
+      - description: Todo UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TodoResponse'
+      security:
+      - BearerAuth: []
+      summary: Get todo by uuid
+      tags:
+      - todos
+    put:
+      consumes:
+      - application/json
+      description: Update todo
+      parameters:
+      - description: Todo UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Update todo request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TodoResponse'
+      security:
+      - BearerAuth: []
+      summary: Update todo
       tags:
       - todos
 securityDefinitions:
