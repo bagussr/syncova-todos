@@ -36,6 +36,16 @@ type UpdateProjectRequest struct {
 	DueDate     time.Time `json:"due_date"`
 }
 
+func toProjectDto(data models.Project) ProjectDto {
+	return ProjectDto{
+		UUID:        data.Uuid,
+		Name:        data.Name,
+		Description: data.Description,
+		Status:      string(data.Status),
+		DueDate:     data.DueDate,
+	}
+}
+
 func NewProjectSuccessResponse(data models.Project, message string) ProjectResponse {
 	return ProjectResponse{
 		BaseResponse: domain.BaseResponse{
@@ -54,6 +64,18 @@ func NewProjectSuccessResponse(data models.Project, message string) ProjectRespo
 }
 
 func NewProjectsListSuccessResponse(data *domain.BaseListResponse, message string) ProjectsListResponse {
+	projects := []ProjectDto{}
+
+	if items, ok := data.Data.([]models.Project); ok {
+		for _, item := range items {
+			projects = append(projects, toProjectDto(item))
+		}
+	} else if items, ok := data.Data.(*[]models.Project); ok && items != nil {
+		for _, item := range *items {
+			projects = append(projects, toProjectDto(item))
+		}
+	}
+
 	return ProjectsListResponse{
 		BaseListResponse: domain.BaseListResponse{
 			Success:    true,
@@ -63,7 +85,7 @@ func NewProjectsListSuccessResponse(data *domain.BaseListResponse, message strin
 			PerPage:    data.PerPage,
 			Total:      data.Total,
 		},
-		Data: data.Data,
+		Data: projects,
 	}
 }
 
