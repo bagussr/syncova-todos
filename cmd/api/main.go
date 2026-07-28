@@ -35,7 +35,12 @@ func main() {
 	docs.SwaggerInfo.Title = "Syncova Todo API"
 	docs.SwaggerInfo.Description = "This is a sample server for Syncova Todo API."
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = cfg.Host + ":" + cfg.Port
+	if cfg.ENV == "production" {
+		docs.SwaggerInfo.Host = cfg.Host
+	} else {
+
+		docs.SwaggerInfo.Host = cfg.Host + ":" + cfg.Port
+	}
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
