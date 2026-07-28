@@ -19,6 +19,7 @@ func SetupRouter(r *gin.RouterGroup, db *database.PostgresDB) *gin.RouterGroup {
 	// Setup router
 	SetupTodosRouter(v1, db)
 	SetupProjectsRouter(v1, db)
+	SetupStatusRouter(v1, db)
 
 	return r
 }

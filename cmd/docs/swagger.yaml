@@ -26,6 +26,16 @@ definitions:
     - due_date
     - name
     type: object
+  dto.CreateStatusRequest:
+    properties:
+      project_uuid:
+        type: string
+      status:
+        type: string
+    required:
+    - project_uuid
+    - status
+    type: object
   dto.CreateTodoRequest:
     properties:
       description:
@@ -106,6 +116,49 @@ definitions:
     - status_code
     - success
     - total
+    type: object
+  dto.StatusDto:
+    properties:
+      status:
+        type: string
+      uuid:
+        type: string
+    type: object
+  dto.StatusListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.StatusDto'
+        type: array
+      message:
+        type: string
+      status_code:
+        default: 200
+        type: integer
+      success:
+        default: true
+        type: boolean
+    required:
+    - message
+    - status_code
+    - success
+    type: object
+  dto.StatusResponse:
+    properties:
+      data:
+        $ref: '#/definitions/dto.StatusDto'
+      message:
+        type: string
+      status_code:
+        default: 200
+        type: integer
+      success:
+        default: true
+        type: boolean
+    required:
+    - message
+    - status_code
+    - success
     type: object
   dto.TodoResponse:
     properties:
@@ -306,6 +359,98 @@ paths:
       summary: Update a project
       tags:
       - Projects
+  /status:
+    post:
+      consumes:
+      - application/json
+      description: Create a new status
+      parameters:
+      - description: Create Status Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.StatusResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new status
+      tags:
+      - Status
+  /status/{uuid}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete status by UUID
+      parameters:
+      - description: Status UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.BaseResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete status by UUID
+      tags:
+      - Status
+    get:
+      consumes:
+      - application/json
+      description: Get status by UUID
+      parameters:
+      - description: Status UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StatusResponse'
+      security:
+      - BearerAuth: []
+      summary: Get status by UUID
+      tags:
+      - Status
+  /status/projects/{project_uuid}:
+    get:
+      consumes:
+      - application/json
+      description: Get all status by project ID
+      parameters:
+      - description: Project UUID
+        in: path
+        name: project_uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StatusListResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all status by project ID
+      tags:
+      - Status
   /todos:
     get:
       consumes:

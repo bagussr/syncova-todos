@@ -221,6 +221,154 @@
                 ]
             }
         },
+        "/status": {
+            "post": {
+                "description": "Create a new status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Status"
+                ],
+                "summary": "Create a new status",
+                "parameters": [
+                    {
+                        "description": "Create Status Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateStatusRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StatusResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/status/projects/{project_uuid}": {
+            "get": {
+                "description": "Get all status by project ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Status"
+                ],
+                "summary": "Get all status by project ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "project_uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StatusListResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/status/{uuid}": {
+            "get": {
+                "description": "Get status by UUID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Status"
+                ],
+                "summary": "Get status by UUID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Status UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StatusResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Delete status by UUID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Status"
+                ],
+                "summary": "Delete status by UUID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Status UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.BaseResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/todos": {
             "get": {
                 "description": "Get all todos",
@@ -479,6 +627,21 @@
                 }
             }
         },
+        "dto.CreateStatusRequest": {
+            "type": "object",
+            "required": [
+                "project_uuid",
+                "status"
+            ],
+            "properties": {
+                "project_uuid": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateTodoRequest": {
             "type": "object",
             "required": [
@@ -589,6 +752,68 @@
                 "total": {
                     "type": "integer",
                     "default": 0
+                }
+            }
+        },
+        "dto.StatusDto": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.StatusListResponse": {
+            "type": "object",
+            "required": [
+                "message",
+                "status_code",
+                "success"
+            ],
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.StatusDto"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "integer",
+                    "default": 200
+                },
+                "success": {
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+        "dto.StatusResponse": {
+            "type": "object",
+            "required": [
+                "message",
+                "status_code",
+                "success"
+            ],
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/dto.StatusDto"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "integer",
+                    "default": 200
+                },
+                "success": {
+                    "type": "boolean",
+                    "default": true
                 }
             }
         },
