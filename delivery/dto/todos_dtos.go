@@ -67,7 +67,7 @@ func NewTodoSuccessResponse(data models.Todos, message string) TodoResponse {
 }
 
 func NewTodosListSuccessResponse(data *domain.BaseListResponse, message string) TodosListResponse {
-	todos := []TodosDto{}
+	todos := make([]TodosDto, 0)
 
 	if items, ok := data.Data.(*[]models.Todos); ok && items != nil {
 		for _, item := range *items {

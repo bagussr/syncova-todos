@@ -64,7 +64,7 @@ func NewProjectSuccessResponse(data models.Project, message string) ProjectRespo
 }
 
 func NewProjectsListSuccessResponse(data *domain.BaseListResponse, message string) ProjectsListResponse {
-	projects := []ProjectDto{}
+	projects := make([]ProjectDto, 0)
 
 	if items, ok := data.Data.([]models.Project); ok {
 		for _, item := range items {

@@ -4,6 +4,119 @@
         "contact": {}
     },
     "paths": {
+        "/labels": {
+            "post": {
+                "description": "Create label",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Labels"
+                ],
+                "summary": "Create label",
+                "parameters": [
+                    {
+                        "description": "Create label request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateLabelRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.LabelsResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/labels/projects/{project_uuid}": {
+            "get": {
+                "description": "Get all labels by project ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Labels"
+                ],
+                "summary": "Get all labels by project ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "project_uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.LabelsListResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/labels/{label_uuid}": {
+            "delete": {
+                "description": "Delete label by UUID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Labels"
+                ],
+                "summary": "Delete label by UUID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Label UUID",
+                        "name": "label_uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.LabelsResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/projects": {
             "get": {
                 "description": "Get all projects",
@@ -609,6 +722,21 @@
                 }
             }
         },
+        "dto.CreateLabelRequest": {
+            "type": "object",
+            "required": [
+                "label",
+                "project_uuid"
+            ],
+            "properties": {
+                "label": {
+                    "type": "string"
+                },
+                "project_uuid": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateProjectRequest": {
             "type": "object",
             "required": [
@@ -670,6 +798,68 @@
                 },
                 "title": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.LabelsDto": {
+            "type": "object",
+            "properties": {
+                "label": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.LabelsListResponse": {
+            "type": "object",
+            "required": [
+                "message",
+                "status_code",
+                "success"
+            ],
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.LabelsDto"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "integer",
+                    "default": 200
+                },
+                "success": {
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+        "dto.LabelsResponse": {
+            "type": "object",
+            "required": [
+                "message",
+                "status_code",
+                "success"
+            ],
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/dto.LabelsDto"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "integer",
+                    "default": 200
+                },
+                "success": {
+                    "type": "boolean",
+                    "default": true
                 }
             }
         },

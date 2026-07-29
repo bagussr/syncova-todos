@@ -14,6 +14,16 @@ definitions:
     - status_code
     - success
     type: object
+  dto.CreateLabelRequest:
+    properties:
+      label:
+        type: string
+      project_uuid:
+        type: string
+    required:
+    - label
+    - project_uuid
+    type: object
   dto.CreateProjectRequest:
     properties:
       description:
@@ -57,6 +67,49 @@ definitions:
     - due_date
     - start_date
     - title
+    type: object
+  dto.LabelsDto:
+    properties:
+      label:
+        type: string
+      uuid:
+        type: string
+    type: object
+  dto.LabelsListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.LabelsDto'
+        type: array
+      message:
+        type: string
+      status_code:
+        default: 200
+        type: integer
+      success:
+        default: true
+        type: boolean
+    required:
+    - message
+    - status_code
+    - success
+    type: object
+  dto.LabelsResponse:
+    properties:
+      data:
+        $ref: '#/definitions/dto.LabelsDto'
+      message:
+        type: string
+      status_code:
+        default: 200
+        type: integer
+      success:
+        default: true
+        type: boolean
+    required:
+    - message
+    - status_code
+    - success
     type: object
   dto.ProjectDto:
     properties:
@@ -221,6 +274,76 @@ definitions:
 info:
   contact: {}
 paths:
+  /labels:
+    post:
+      consumes:
+      - application/json
+      description: Create label
+      parameters:
+      - description: Create label request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateLabelRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.LabelsResponse'
+      security:
+      - BearerAuth: []
+      summary: Create label
+      tags:
+      - Labels
+  /labels/{label_uuid}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete label by UUID
+      parameters:
+      - description: Label UUID
+        in: path
+        name: label_uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LabelsResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete label by UUID
+      tags:
+      - Labels
+  /labels/projects/{project_uuid}:
+    get:
+      consumes:
+      - application/json
+      description: Get all labels by project ID
+      parameters:
+      - description: Project UUID
+        in: path
+        name: project_uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LabelsListResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all labels by project ID
+      tags:
+      - Labels
   /projects:
     get:
       consumes:
